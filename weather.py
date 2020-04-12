@@ -1,8 +1,11 @@
-from bs4 import BeautifulSoup
-import requests
+import smtplib
 import tkinter as tk
 import tkinter.messagebox
-import smtplib
+
+import requests
+from bs4 import BeautifulSoup
+from tkinter import *
+from PIL import ImageTk,Image
 
 
 def makeSoup():
@@ -21,7 +24,7 @@ def makeSoup():
 def getTempList():
     soup = makeSoup()
 
-    currenttemp= "Aktuell: "+soup.find(id="wob_tm").get_text()
+    currenttemp = "Aktuell: " + soup.find(id="wob_tm").get_text()
 
     tempList = [currenttemp]
 
@@ -51,17 +54,34 @@ def buildStartGUI():
     window.geometry("400x300")
     window.resizable(False, False)
     window.eval('tk::PlaceWindow . center')
+    window.configure(background="black")
+
+    canvas = tk.Canvas(window,width="400",height="300")
+    weatherimage = ImageTk.PhotoImage(file="C:\\Users\\timos\\Desktop\\PythonWeather\\picture.gif")
+    canvas.create_image(0, 0, anchor=NW, image =weatherimage)
+    canvas.pack()
+
+    weatherdata = tk.Text(window, height="10", width="30")
+
+    for e in getTempList():
+        weatherdata.insert(tk.INSERT, e + "\n")
+
+    weatherdata.config(state="disabled")
+    weatherdata.pack()
+
+    canvas.create_window(70, 10, anchor=NW, window=weatherdata)
 
     doYouWantEmailLabel = tk.Label(
-        window, text="Do you want an email with the current weather?")
+        window, text="Do you want an email with the weather?")
     doYouWantEmailLabel.pack()
 
+    canvas.create_window(70, 200, anchor=NW, window=doYouWantEmailLabel)
+
     sendEmailButton = tk.Button(
-        window, text="Send email", command=lambda: buildSendEmailGUI(window))
+        window, text="Yes", command=lambda: buildSendEmailGUI(window))
     sendEmailButton.pack()
 
-    noButton = tk.Button(window, text="No thanks", command=lambda: buildWeatherGUI(window))
-    noButton.pack()
+    canvas.create_window(170, 240, anchor=NW, window=sendEmailButton)
 
     window.mainloop()
 
@@ -74,18 +94,31 @@ def buildSendEmailGUI(oldWindow):
     window.geometry("400x300")
     window.eval('tk::PlaceWindow . center')
 
+    canvas = tk.Canvas(window, width="400", height="300")
+    weatherimage = ImageTk.PhotoImage(file="C:\\Users\\timos\\Desktop\\PythonWeather\\picture.gif")
+    canvas.create_image(0, 0, anchor=NW, image=weatherimage)
+    canvas.pack()
+
     enterEmailLabel = tk.Label(window, text="Please enter your email:")
     enterEmailLabel.pack()
 
-    textField = tk.Entry(window)
+    canvas.create_window(130, 60, anchor=NW, window=enterEmailLabel)
+
+    textField = tk.Entry(window, width="40")
     textField.pack()
+
+    canvas.create_window(80, 90, anchor=NW, window=textField)
 
     sendEmailButton = tk.Button(window, text="Send email",
                                 command=lambda: sendEmailWithWeather(textField.get(), window))
     sendEmailButton.pack()
 
+    canvas.create_window(160, 120, anchor=NW, window=sendEmailButton)
+
     goBackButton = tk.Button(window, text="Go back", command=lambda: goBack(window))
     goBackButton.pack()
+
+    canvas.create_window(165, 150, anchor=NW, window=goBackButton)
 
     window.mainloop()
 
@@ -96,7 +129,7 @@ def goBack(oldWindow):
 
 
 def sendEmailWithWeather(userEmail, oldWindow):
-    tempList = getTempList()
+    templist = getTempList()
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.ehlo()
     server.starttls()
@@ -109,7 +142,7 @@ def sendEmailWithWeather(userEmail, oldWindow):
 
     body = ""
 
-    for element in tempList:
+    for element in templist:
         body = body + "\n" + element
 
     body = body.replace('ö', 'oe')
@@ -124,34 +157,18 @@ def sendEmailWithWeather(userEmail, oldWindow):
             userEmail,
             message.encode("utf8"))
         tkinter.messagebox.showinfo("Message", "Email was sent successfully!")
-        buildWeatherGUI(oldWindow)
+        oldWindow.destroy()
+        buildStartGUI()
     except:
         tkinter.messagebox.showinfo("Error", "This is not a valid email!")
-
-        server.quit()
-
-
-def buildWeatherGUI(oldWindow):
-    oldWindow.destroy()
-    onlyTemps = []
-
-    tempWithDaysList = getTempList()
-
-    for element in tempWithDaysList:
-        print(element)
-        onlyTemps.append(element[len(element) - 2] + element[len(element) - 1])
-
-    onlyTemps = list(reversed(onlyTemps))
-
-
+    server.quit()
 
 
 def containsNumber(string):
     for i in range(len(string)):
-        if (string[i].isdigit()):
+        if string[i].isdigit():
             return True
     return False
 
 
 buildStartGUI()
-
