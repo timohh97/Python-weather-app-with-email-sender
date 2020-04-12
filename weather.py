@@ -5,8 +5,7 @@ import tkinter.messagebox
 import smtplib
 
 
-
-def getTempList():
+def makeSoup():
     url = "https://www.google.com/search?client=firefox-b-d&q=wetter"
 
     userAgent = {
@@ -16,30 +15,34 @@ def getTempList():
 
     soup = BeautifulSoup(page.content, "html.parser")
 
-    tempList = []
+    return soup
+
+
+def getTempList():
+    soup = makeSoup()
+
+    currenttemp= "Aktuell: "+soup.find(id="wob_tm").get_text()
+
+    tempList = [currenttemp]
 
     daysList = []
 
     soupList = soup.find(id="wob_dp")
-    tempSoup= soupList.find_all(class_="wob_t")
+    tempSoup = soupList.find_all(class_="wob_t")
 
-    daysSoup = soup.find_all("div",class_="vk_lgy")
+    daysSoup = soup.find_all("div", class_="vk_lgy")
     for e in daysSoup:
-          if(containsNumber(e.get_text())==False):
-              daysList.append(e.get_text()[0:2])
+        if (containsNumber(e.get_text()) == False):
+            daysList.append(e.get_text()[0:2])
 
- 
-    firstDayTemp = daysList[0]+": "+tempSoup[0].get_text()
+    firstDayTemp = daysList[0] + ": " + tempSoup[0].get_text()
     tempList.append(firstDayTemp)
 
-    for i in [4,8,12,16,20,24,28]:
-             tempForOneDay = daysList[int(i/4)]+": "+tempSoup[i].get_text()
-             tempList.append(tempForOneDay)
-    
+    for i in [4, 8, 12, 16, 20, 24, 28]:
+        tempForOneDay = daysList[int(i / 4)] + ": " + tempSoup[i].get_text()
+        tempList.append(tempForOneDay)
+
     return tempList
-
-
-
 
 
 def buildStartGUI():
@@ -57,7 +60,7 @@ def buildStartGUI():
         window, text="Send email", command=lambda: buildSendEmailGUI(window))
     sendEmailButton.pack()
 
-    noButton = tk.Button(window, text="No thanks", command=lambda: drawChart(window))
+    noButton = tk.Button(window, text="No thanks", command=lambda: buildWeatherGUI(window))
     noButton.pack()
 
     window.mainloop()
@@ -77,7 +80,8 @@ def buildSendEmailGUI(oldWindow):
     textField = tk.Entry(window)
     textField.pack()
 
-    sendEmailButton = tk.Button(window, text="Send email", command=lambda: sendEmailWithWeather(textField.get(),window))
+    sendEmailButton = tk.Button(window, text="Send email",
+                                command=lambda: sendEmailWithWeather(textField.get(), window))
     sendEmailButton.pack()
 
     goBackButton = tk.Button(window, text="Go back", command=lambda: goBack(window))
@@ -85,89 +89,69 @@ def buildSendEmailGUI(oldWindow):
 
     window.mainloop()
 
-def goBack(oldWindow):
-   oldWindow.destroy()
-   buildStartGUI()
 
-def sendEmailWithWeather(userEmail,oldWindow):
+def goBack(oldWindow):
+    oldWindow.destroy()
+    buildStartGUI()
+
+
+def sendEmailWithWeather(userEmail, oldWindow):
     tempList = getTempList()
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.ehlo()
     server.starttls()
     server.ehlo()
-   
+
     # This uses an app password for my computer!
     server.login("timo.schessl@gmail.com", "fmlwlptlhldmblai")
-
 
     subject = "Python Mail Weather"
 
     body = ""
 
     for element in tempList:
-        body = body+"\n"+element
+        body = body + "\n" + element
 
     body = body.replace('ö', 'oe')
     body = body.replace('ü', 'ue')
     body = body.replace('ä', 'ae')
 
     message = f"Subject: {subject}\n\n{body}"
-    
+
     try:
-     server.sendmail(
-        "Timo",
-        userEmail,
-        message.encode("utf8"))
-     tkinter.messagebox.showinfo("Message","Email was sent successfully!")
-     drawChart(oldWindow)
+        server.sendmail(
+            "Timo",
+            userEmail,
+            message.encode("utf8"))
+        tkinter.messagebox.showinfo("Message", "Email was sent successfully!")
+        buildWeatherGUI(oldWindow)
     except:
-     tkinter.messagebox.showinfo("Error","This is not a valid email!")
-     
-     server.quit()
-   
+        tkinter.messagebox.showinfo("Error", "This is not a valid email!")
+
+        server.quit()
 
 
-
-def drawChart(oldWindow):
+def buildWeatherGUI(oldWindow):
     oldWindow.destroy()
-    onlyTemps =[]
+    onlyTemps = []
 
     tempWithDaysList = getTempList()
 
     for element in tempWithDaysList:
         print(element)
-        onlyTemps.append(element[len(element)-2]+element[len(element)-1])
-    
+        onlyTemps.append(element[len(element) - 2] + element[len(element) - 1])
+
     onlyTemps = list(reversed(onlyTemps))
-    
-    
+
+
 
 
 def containsNumber(string):
     for i in range(len(string)):
-        if(string[i].isdigit()):
+        if (string[i].isdigit()):
             return True
     return False
 
 
-def getPictures():
-    url = "https://www.google.com/search?client=firefox-b-d&q=wetter"
-
-    userAgent = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0"}
-
-    page = requests.get(url, headers=userAgent)
-
-    soup = BeautifulSoup(page.content, "html.parser")
-
-    
-
-
-
-
-
 buildStartGUI()
-
-
-
 
