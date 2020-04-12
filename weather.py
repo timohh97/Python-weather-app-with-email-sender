@@ -132,7 +132,10 @@ def sendEmailWithWeather(userEmail, oldWindow):
     server.ehlo()
 
     password=input("Enter the server password:")
-    server.login("timo.schessl@gmail.com", password)
+    try:
+      server.login("timo.schessl@gmail.com", password)
+    except:
+      print("Wrong password.")
 
     subject = "Python Mail Weather"
 
