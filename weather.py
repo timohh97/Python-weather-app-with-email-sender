@@ -136,6 +136,8 @@ def sendEmailWithWeather(userEmail, oldWindow):
       server.login("timo.schessl@gmail.com", password)
     except:
       print("Wrong password.")
+      oldWindow.destroy()
+      buildStartGUI()
 
     subject = "Python Mail Weather"
 
