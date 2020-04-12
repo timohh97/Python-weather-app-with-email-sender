@@ -5,7 +5,7 @@ import tkinter.messagebox
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
-from PIL import ImageTk,Image
+from PIL import ImageTk, Image
 
 
 def makeSoup():
@@ -24,9 +24,9 @@ def makeSoup():
 def getTempList():
     soup = makeSoup()
 
-    currenttemp = "Aktuell: " + soup.find(id="wob_tm").get_text()
+    currenttemp = "Current: " + soup.find(id="wob_tm").get_text()
 
-    tempList = [currenttemp]
+    tempList = [currenttemp + " °C"]
 
     daysList = []
 
@@ -39,11 +39,11 @@ def getTempList():
             daysList.append(e.get_text()[0:2])
 
     firstDayTemp = daysList[0] + ": " + tempSoup[0].get_text()
-    tempList.append(firstDayTemp)
+    tempList.append(firstDayTemp + " °C")
 
     for i in [4, 8, 12, 16, 20, 24, 28]:
         tempForOneDay = daysList[int(i / 4)] + ": " + tempSoup[i].get_text()
-        tempList.append(tempForOneDay)
+        tempList.append(tempForOneDay + " °C")
 
     return tempList
 
@@ -51,37 +51,31 @@ def getTempList():
 def buildStartGUI():
     window = tk.Tk()
     window.title("Weather App")
-    window.geometry("400x300")
+    window.geometry("600x400")
     window.resizable(False, False)
     window.eval('tk::PlaceWindow . center')
     window.configure(background="black")
 
-    canvas = tk.Canvas(window,width="400",height="300")
+    canvas = tk.Canvas(window, width="600", height="400")
     weatherimage = ImageTk.PhotoImage(file="C:\\Users\\timos\\Desktop\\PythonWeather\\picture.gif")
-    canvas.create_image(0, 0, anchor=NW, image =weatherimage)
+    canvas.create_image(0, 0, anchor=NW, image=weatherimage)
     canvas.pack()
 
-    weatherdata = tk.Text(window, height="10", width="30")
+    weatherdata = tk.Text(window, height="9", width="20",bg="gray15",fg="white")
 
     for e in getTempList():
         weatherdata.insert(tk.INSERT, e + "\n")
 
-    weatherdata.config(state="disabled")
+    weatherdata.config(state="disabled", font=("Courier", 15, "bold"))
     weatherdata.pack()
 
-    canvas.create_window(70, 10, anchor=NW, window=weatherdata)
-
-    doYouWantEmailLabel = tk.Label(
-        window, text="Do you want an email with the weather?")
-    doYouWantEmailLabel.pack()
-
-    canvas.create_window(70, 200, anchor=NW, window=doYouWantEmailLabel)
+    canvas.create_window(170, 10, anchor=NW, window=weatherdata)
 
     sendEmailButton = tk.Button(
-        window, text="Yes", command=lambda: buildSendEmailGUI(window))
+        window, text="Send email", command=lambda: buildSendEmailGUI(window), bg="orange", font=("Courier", 15, "bold"))
     sendEmailButton.pack()
 
-    canvas.create_window(170, 240, anchor=NW, window=sendEmailButton)
+    canvas.create_window(220, 240, anchor=NW, window=sendEmailButton)
 
     window.mainloop()
 
@@ -91,34 +85,36 @@ def buildSendEmailGUI(oldWindow):
     window = tk.Tk()
     window.resizable(False, False)
     window.title("Weather App")
-    window.geometry("400x300")
+    window.geometry("600x400")
     window.eval('tk::PlaceWindow . center')
 
-    canvas = tk.Canvas(window, width="400", height="300")
+    canvas = tk.Canvas(window, width="600", height="400")
     weatherimage = ImageTk.PhotoImage(file="C:\\Users\\timos\\Desktop\\PythonWeather\\picture.gif")
     canvas.create_image(0, 0, anchor=NW, image=weatherimage)
     canvas.pack()
 
-    enterEmailLabel = tk.Label(window, text="Please enter your email:")
+    enterEmailLabel = tk.Label(window, text="Please enter your email:",
+    width="40",bg="gray15",fg="white",font=("Courier",15,"bold"))
     enterEmailLabel.pack()
 
-    canvas.create_window(130, 60, anchor=NW, window=enterEmailLabel)
+    canvas.create_window(79, 62, anchor=NW, window=enterEmailLabel)
 
-    textField = tk.Entry(window, width="40")
+    textField = tk.Entry(window, width="40",font=("Courier",15,"bold"),bg="gray15",fg="white"
+                         ,insertbackground="white")
     textField.pack()
 
     canvas.create_window(80, 90, anchor=NW, window=textField)
 
     sendEmailButton = tk.Button(window, text="Send email",
-                                command=lambda: sendEmailWithWeather(textField.get(), window))
+    command=lambda: sendEmailWithWeather(textField.get(), window),bg="orange",font=("Courier",15,"bold"))
     sendEmailButton.pack()
 
-    canvas.create_window(160, 120, anchor=NW, window=sendEmailButton)
+    canvas.create_window(240, 130, anchor=NW, window=sendEmailButton)
 
-    goBackButton = tk.Button(window, text="Go back", command=lambda: goBack(window))
+    goBackButton = tk.Button(window, text="Go back", command=lambda: goBack(window),bg="orange",font=("Courier",15,"bold"))
     goBackButton.pack()
 
-    canvas.create_window(165, 150, anchor=NW, window=goBackButton)
+    canvas.create_window(260, 180, anchor=NW, window=goBackButton)
 
     window.mainloop()
 
