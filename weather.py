@@ -131,8 +131,8 @@ def sendEmailWithWeather(userEmail, oldWindow):
     server.starttls()
     server.ehlo()
 
-    # This uses an app password for my computer!
-    server.login("timo.schessl@gmail.com", "fmlwlptlhldmblai")
+    password=input("Enter the server password:")
+    server.login("timo.schessl@gmail.com", password)
 
     subject = "Python Mail Weather"
 
@@ -149,7 +149,7 @@ def sendEmailWithWeather(userEmail, oldWindow):
 
     try:
         server.sendmail(
-            "Timo",
+            "Python Weather App",
             userEmail,
             message.encode("utf8"))
         tkinter.messagebox.showinfo("Message", "Email was sent successfully!")
@@ -165,6 +165,7 @@ def containsNumber(string):
         if string[i].isdigit():
             return True
     return False
+    
 
 
 buildStartGUI()
