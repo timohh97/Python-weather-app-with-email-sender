@@ -13,12 +13,16 @@ def makeSoup():
 
     userAgent = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0"}
+    try:
+     page = requests.get(url, headers=userAgent)
 
-    page = requests.get(url, headers=userAgent)
+     soup = BeautifulSoup(page.content, "html.parser")
 
-    soup = BeautifulSoup(page.content, "html.parser")
+     return soup
+    except:
+     tkinter.messagebox.showinfo("Error", "No connection with the internet.")
 
-    return soup
+
 
 
 def getTempList():
@@ -138,7 +142,7 @@ def sendEmailWithWeather(userEmail, oldWindow):
     try:
         server.login("timo.schessl@gmail.com", password)
     except:
-        print("Wrong password.")
+        tkinter.messagebox.showinfo("Error", "Wrong password!")
         oldWindow.destroy()
         buildStartGUI()
         server.quit()
