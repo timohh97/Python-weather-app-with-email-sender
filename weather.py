@@ -61,7 +61,7 @@ def buildStartGUI():
     canvas.create_image(0, 0, anchor=NW, image=weatherimage)
     canvas.pack()
 
-    weatherdata = tk.Text(window, height="9", width="20",bg="gray15",fg="white")
+    weatherdata = tk.Text(window, height="9", width="20", bg="gray15", fg="white")
 
     for e in getTempList():
         weatherdata.insert(tk.INSERT, e + "\n")
@@ -94,24 +94,26 @@ def buildSendEmailGUI(oldWindow):
     canvas.pack()
 
     enterEmailLabel = tk.Label(window, text="Please enter your email:",
-    width="40",bg="gray15",fg="white",font=("Courier",15,"bold"))
+                               width="40", bg="gray15", fg="white", font=("Courier", 15, "bold"))
     enterEmailLabel.pack()
 
     canvas.create_window(79, 62, anchor=NW, window=enterEmailLabel)
 
-    textField = tk.Entry(window, width="40",font=("Courier",15,"bold"),bg="gray15",fg="white"
-                         ,insertbackground="white")
+    textField = tk.Entry(window, width="40", font=("Courier", 15, "bold"), bg="gray15", fg="white"
+                         , insertbackground="white")
     textField.pack()
 
     canvas.create_window(80, 90, anchor=NW, window=textField)
 
     sendEmailButton = tk.Button(window, text="Send email",
-    command=lambda: sendEmailWithWeather(textField.get(), window),bg="orange",font=("Courier",15,"bold"))
+                                command=lambda: sendEmailWithWeather(textField.get(), window), bg="orange",
+                                font=("Courier", 15, "bold"))
     sendEmailButton.pack()
 
     canvas.create_window(240, 130, anchor=NW, window=sendEmailButton)
 
-    goBackButton = tk.Button(window, text="Go back", command=lambda: goBack(window),bg="orange",font=("Courier",15,"bold"))
+    goBackButton = tk.Button(window, text="Go back", command=lambda: goBack(window), bg="orange",
+                             font=("Courier", 15, "bold"))
     goBackButton.pack()
 
     canvas.create_window(260, 180, anchor=NW, window=goBackButton)
@@ -130,39 +132,43 @@ def sendEmailWithWeather(userEmail, oldWindow):
     server.ehlo()
     server.starttls()
     server.ehlo()
+    flag = True
 
-    password=input("Enter the server password:")
+    password = input("Enter the server password:")
     try:
-      server.login("timo.schessl@gmail.com", password)
+        server.login("timo.schessl@gmail.com", password)
     except:
-      print("Wrong password.")
-      oldWindow.destroy()
-      buildStartGUI()
-
-    subject = "Python Mail Weather"
-
-    body = ""
-
-    for element in templist:
-        body = body + "\n" + element
-
-    body = body.replace('ö', 'oe')
-    body = body.replace('ü', 'ue')
-    body = body.replace('ä', 'ae')
-
-    message = f"Subject: {subject}\n\n{body}"
-
-    try:
-        server.sendmail(
-            "Python Weather App",
-            userEmail,
-            message.encode("utf8"))
-        tkinter.messagebox.showinfo("Message", "Email was sent successfully!")
+        print("Wrong password.")
         oldWindow.destroy()
         buildStartGUI()
-    except:
-        tkinter.messagebox.showinfo("Error", "This is not a valid email!")
-    server.quit()
+        server.quit()
+        flag = False
+
+    if (flag):
+        subject = "Python Mail Weather"
+
+        body = ""
+
+        for element in templist:
+            body = body + "\n" + element
+
+        body = body.replace('ö', 'oe')
+        body = body.replace('ü', 'ue')
+        body = body.replace('ä', 'ae')
+
+        message = f"Subject: {subject}\n\n{body}"
+
+        try:
+            server.sendmail(
+                "Python Weather App",
+                userEmail,
+                message.encode("utf8"))
+            tkinter.messagebox.showinfo("Message", "Email was sent successfully!")
+            oldWindow.destroy()
+            buildStartGUI()
+        except:
+            tkinter.messagebox.showinfo("Error", "This is not a valid email!")
+        server.quit()
 
 
 def containsNumber(string):
@@ -170,7 +176,6 @@ def containsNumber(string):
         if string[i].isdigit():
             return True
     return False
-    
 
 
 buildStartGUI()
