@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from tkinter import *
 from PIL import ImageTk, Image
+from tkinter.simpledialog import askstring
 
 
 def makeSoup():
@@ -131,24 +132,22 @@ def goBack(oldWindow):
 
 
 def sendEmailWithWeather(userEmail, oldWindow):
-    templist = getTempList()
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.ehlo()
-    server.starttls()
-    server.ehlo()
     flag = True
 
-    password = input("Enter the server password:")
+    password = askstring("Message", "Enter the server password:")
     try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
         server.login("timo.schessl@gmail.com", password)
     except:
-        tkinter.messagebox.showinfo("Error", "Wrong password!")
-        oldWindow.destroy()
-        buildStartGUI()
+        tkinter.messagebox.showinfo("Error", "Login not successful!")
         server.quit()
         flag = False
 
     if (flag):
+        templist = getTempList()
         subject = "Python Mail Weather"
 
         body = ""
@@ -168,8 +167,6 @@ def sendEmailWithWeather(userEmail, oldWindow):
                 userEmail,
                 message.encode("utf8"))
             tkinter.messagebox.showinfo("Message", "Email was sent successfully!")
-            oldWindow.destroy()
-            buildStartGUI()
         except:
             tkinter.messagebox.showinfo("Error", "This is not a valid email!")
         server.quit()
