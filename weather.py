@@ -17,15 +17,13 @@ def makeSoup():
     userAgent = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0"}
     try:
-     page = requests.get(url, headers=userAgent)
+        page = requests.get(url, headers=userAgent)
 
-     soup = BeautifulSoup(page.content, "html.parser")
+        soup = BeautifulSoup(page.content, "html.parser")
 
-     return soup
+        return soup
     except:
-     tkinter.messagebox.showinfo("Error", "No connection with the internet.")
-
-
+        tkinter.messagebox.showinfo("Error", "No connection with the internet.")
 
 
 def getTempList():
@@ -33,7 +31,7 @@ def getTempList():
 
     currenttemp = "Current: " + soup.find(id="wob_tm").get_text()
 
-    tempList = [getDate(),currenttemp + " °C"]
+    tempList = [getDate(), currenttemp + " °C"]
 
     daysList = []
 
@@ -83,6 +81,13 @@ def buildStartGUI():
     sendEmailButton.pack()
 
     canvas.create_window(220, 270, anchor=NW, window=sendEmailButton)
+
+    updateButton = tk.Button(
+        window, text="Update", command=lambda: goBack(window), bg="orange", font=("Courier", 15, "bold"))
+    updateButton.pack()
+
+    canvas.create_window(240, 320, anchor=NW, window=updateButton)
+
 
     window.mainloop()
 
@@ -160,7 +165,7 @@ def sendEmailWithWeather(userEmail, oldWindow):
         body = body.replace('ö', 'oe')
         body = body.replace('ü', 'ue')
         body = body.replace('ä', 'ae')
-        body = body.replace("°"," ")
+        body = body.replace("°", " ")
 
         message = f"Subject: {subject}\n\n{body}"
 
@@ -183,22 +188,18 @@ def containsNumber(string):
 
 
 def getTime():
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    return current_time
+     now = datetime.now()
+     current_time = now.strftime("%H:%M:%S")
+     return current_time
+
 
 def getDate():
     today = date.today()
     today = str(today)
-    numberList= today.split("-")
+    numberList = today.split("-")
     numberList.reverse()
 
-    return numberList[0]+"."+numberList[1]+"."+numberList[2]
-
-
-
+    return numberList[0] + "." + numberList[1] + "." + numberList[2]
 
 
 buildStartGUI()
-
-
