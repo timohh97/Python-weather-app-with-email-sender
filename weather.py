@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 from tkinter import *
 from PIL import ImageTk
 from tkinter.simpledialog import askstring
+from datetime import datetime
+from datetime import date
 
 
 def makeSoup():
@@ -31,7 +33,7 @@ def getTempList():
 
     currenttemp = "Current: " + soup.find(id="wob_tm").get_text()
 
-    tempList = [currenttemp + " °C"]
+    tempList = [getDate(),currenttemp + " °C"]
 
     daysList = []
 
@@ -66,7 +68,7 @@ def buildStartGUI():
     canvas.create_image(0, 0, anchor=NW, image=weatherimage)
     canvas.pack()
 
-    weatherdata = tk.Text(window, height="9", width="20", bg="gray15", fg="white")
+    weatherdata = tk.Text(window, height="10", width="20", bg="gray15", fg="white")
 
     for e in getTempList():
         weatherdata.insert(tk.INSERT, e + "\n")
@@ -74,13 +76,13 @@ def buildStartGUI():
     weatherdata.config(state="disabled", font=("Courier", 15, "bold"))
     weatherdata.pack()
 
-    canvas.create_window(170, 10, anchor=NW, window=weatherdata)
+    canvas.create_window(170, 30, anchor=NW, window=weatherdata)
 
     sendEmailButton = tk.Button(
         window, text="Send email", command=lambda: buildSendEmailGUI(window), bg="orange", font=("Courier", 15, "bold"))
     sendEmailButton.pack()
 
-    canvas.create_window(220, 240, anchor=NW, window=sendEmailButton)
+    canvas.create_window(220, 270, anchor=NW, window=sendEmailButton)
 
     window.mainloop()
 
@@ -180,4 +182,23 @@ def containsNumber(string):
     return False
 
 
+def getTime():
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    return current_time
+
+def getDate():
+    today = date.today()
+    today = str(today)
+    numberList= today.split("-")
+    numberList.reverse()
+
+    return numberList[0]+"."+numberList[1]+"."+numberList[2]
+
+
+
+
+
 buildStartGUI()
+
+
