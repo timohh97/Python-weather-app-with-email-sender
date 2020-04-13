@@ -5,7 +5,7 @@ import tkinter.messagebox
 import requests
 from bs4 import BeautifulSoup
 from tkinter import *
-from PIL import ImageTk, Image
+from PIL import ImageTk
 from tkinter.simpledialog import askstring
 
 
