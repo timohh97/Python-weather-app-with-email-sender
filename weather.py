@@ -158,6 +158,7 @@ def sendEmailWithWeather(userEmail, oldWindow):
         body = body.replace('ö', 'oe')
         body = body.replace('ü', 'ue')
         body = body.replace('ä', 'ae')
+        body = body.replace("°"," ")
 
         message = f"Subject: {subject}\n\n{body}"
 
